@@ -15,13 +15,30 @@ interface Module {
   topics: string[]
 }
 
+// Parse modules coming from the DB — description is stored as JSON
+function parseDbModules(raw: { id: string; title: string; description: string | null; sort_order: number }[]): Module[] {
+  return raw.map((m, idx) => {
+    let parsed: { summary?: string; topics?: string[]; learning_outcomes?: string[]; duration_hours?: number } = {}
+    try { parsed = JSON.parse(m.description ?? '{}') } catch { /* plain text description */ }
+    return {
+      id: m.id,
+      module_number: m.sort_order || idx + 1,
+      title: m.title,
+      description: parsed.summary ?? m.description ?? '',
+      topics: parsed.topics ?? [],
+      learning_outcomes: parsed.learning_outcomes ?? [],
+      duration_hours: parsed.duration_hours ?? 0,
+    }
+  })
+}
+
 interface Props {
   programId: string
   programTitle: string
   programDescription: string
   programLevel: string
   durationWeeks: number
-  initialModules: Module[]
+  initialModules: { id: string; title: string; description: string | null; sort_order: number }[]
 }
 
 export default function ProgramModulesManager({
@@ -33,7 +50,7 @@ export default function ProgramModulesManager({
   initialModules,
 }: Props) {
   const router = useRouter()
-  const [modules, setModules] = useState<Module[]>(initialModules)
+  const [modules, setModules] = useState<Module[]>(() => parseDbModules(initialModules))
   const [generating, setGenerating] = useState(false)
   const [saving, setSaving] = useState(false)
   const [expandedIdx, setExpandedIdx] = useState<number | null>(modules.length > 0 ? 0 : null)

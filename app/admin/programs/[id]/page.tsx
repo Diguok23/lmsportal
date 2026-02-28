@@ -23,12 +23,12 @@ export default async function AdminProgramDetailPage({ params }: { params: Promi
 
   if (!program) notFound()
 
-  // Try to load modules — table may not exist yet
+  // Load modules from the correct table
   const { data: modules } = await adminDb
-    .from('program_modules')
+    .from('modules')
     .select('*')
     .eq('program_id', id)
-    .order('module_number', { ascending: true })
+    .order('sort_order', { ascending: true })
 
   // Enrollment count
   const { count: enrollmentCount } = await adminDb

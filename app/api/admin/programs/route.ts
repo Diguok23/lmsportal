@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
     if (progError) throw progError
 
-    // Insert modules if provided
+    // Insert modules if provided, using the correct 'modules' table and schema
     if (modules && modules.length > 0) {
       const moduleRows = modules.map((m: {
         module_number: number
@@ -49,16 +49,17 @@ export async function POST(request: Request) {
         topics: string[]
       }) => ({
         program_id: program.id,
-        module_number: m.module_number,
         title: m.title,
-        description: m.description,
-        learning_outcomes: m.learning_outcomes,
-        duration_hours: m.duration_hours,
-        topics: m.topics,
+        description: JSON.stringify({
+          summary: m.description,
+          topics: m.topics ?? [],
+          learning_outcomes: m.learning_outcomes ?? [],
+          duration_hours: m.duration_hours ?? 0,
+        }),
+        sort_order: m.module_number,
       }))
 
-      // Try to insert modules — if table doesn't exist, skip gracefully
-      const { error: modError } = await adminDb.from('program_modules').insert(moduleRows)
+      const { error: modError } = await adminDb.from('modules').insert(moduleRows)
       if (modError) console.error('[v0] module insert error (non-fatal):', modError.message)
     }
 
