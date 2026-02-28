@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
-import { BookOpen, Award, ChevronRight, LogOut } from 'lucide-react'
+import { BookOpen, Award, Clock, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default async function DashboardPage() {
@@ -10,30 +9,12 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  try {
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('full_name, is_admin')
-      .eq('id', user.id)
-      .single()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name')
+    .eq('id', user.id)
+    .single()
 
-    if (error?.code === 'PGRST116') {
-      // Profile doesn't exist, create one
-      await supabase.from('profiles').insert({
-        id: user.id,
-        full_name: user.user_metadata?.full_name ?? null,
-      }).throwOnError()
-    }
-
-    // If user is admin, redirect to admin
-    if (profile?.is_admin) {
-      redirect('/admin')
-    }
-  } catch (err) {
-    console.log('[v0] Profile check/creation error:', err)
-  }
-
-  // For all other cases, show student home
   const { data: enrollments } = await supabase
     .from('enrollments')
     .select('id, status, enrolled_at, programs(id, title, description, duration_weeks)')
@@ -48,12 +29,6 @@ export default async function DashboardPage() {
     .eq('student_id', user.id)
     .order('issued_at', { ascending: false })
     .limit(3)
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name')
-    .eq('id', user.id)
-    .single()
 
   const activeCount = enrollments?.filter(e => e.status === 'active').length ?? 0
   const completedCount = enrollments?.filter(e => e.status === 'completed').length ?? 0
@@ -161,4 +136,3 @@ export default async function DashboardPage() {
     </div>
   )
 }
-
