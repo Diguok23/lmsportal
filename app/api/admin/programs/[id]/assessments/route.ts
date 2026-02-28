@@ -20,6 +20,8 @@ export async function POST(
   // type: 'module_quiz' | 'final_exam'
   if (!questions?.length) return NextResponse.json({ error: 'No questions provided' }, { status: 400 })
 
+  console.log('[v0] Saving assessment:', { moduleId, programId, type, questionCount: questions.length })
+
   // Delete existing questions for this module/program+type so we don't duplicate
   if (type === 'module_quiz' && moduleId) {
     await adminDb.from('questions').delete()
@@ -50,9 +52,15 @@ export async function POST(
     question_type: type ?? 'module_quiz',
   }))
 
-  const { error } = await adminDb.from('questions').insert(rows)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  console.log('[v0] Mapped rows sample:', rows[0])
 
+  const { error, data } = await adminDb.from('questions').insert(rows)
+  if (error) {
+    console.error('[v0] Insert error:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  console.log('[v0] Successfully saved', rows.length, 'questions')
   return NextResponse.json({ success: true, saved: rows.length })
 }
 
