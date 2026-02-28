@@ -59,8 +59,14 @@ export async function POST(request: Request) {
       .single()
 
     if (paymentError) {
-      console.error('[IICAR] Payment record error:', paymentError)
-      return NextResponse.json({ error: 'Failed to create payment record' }, { status: 500 })
+      console.error('[IICAR] Payment record error:', paymentError.message)
+      // Column missing — guide admin to run the migration
+      if (paymentError.message.includes('column') || paymentError.code === '42703') {
+        return NextResponse.json({
+          error: 'Database migration required. Please run the following SQL in your Supabase SQL Editor:\n\nALTER TABLE public.payments ADD COLUMN IF NOT EXISTS phone_number TEXT;\nALTER TABLE public.payments ADD COLUMN IF NOT EXISTS kopokopo_location TEXT;\nALTER TABLE public.payments ADD COLUMN IF NOT EXISTS kopokopo_reference TEXT;'
+        }, { status: 500 })
+      }
+      return NextResponse.json({ error: 'Failed to create payment record: ' + paymentError.message }, { status: 500 })
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://localhost:3000'

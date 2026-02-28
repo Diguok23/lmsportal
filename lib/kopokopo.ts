@@ -1,14 +1,14 @@
 // KopoKopo API helper — STK Push via /api/v1/incoming_payments
 // Docs: https://api-docs.kopokopo.com/#receive-payments-from-m-pesa-users-via-stk-push
+// Set KOPOKOPO_BASE_URL env var to switch between sandbox/production:
+//   Sandbox:    https://sandbox.kopokopo.com  (default)
+//   Production: https://app.kopokopo.com
 
-const IS_SANDBOX = process.env.KOPOKOPO_ENV !== 'production'
-const KOPOKOPO_BASE = IS_SANDBOX
-  ? 'https://sandbox.kopokopo.com'
-  : 'https://app.kopokopo.com'
+const KOPOKOPO_BASE = (process.env.KOPOKOPO_BASE_URL ?? 'https://sandbox.kopokopo.com').replace(/\/$/, '')
 
 const CLIENT_ID     = process.env.KOPOKOPO_CLIENT_ID!
 const CLIENT_SECRET = process.env.KOPOKOPO_CLIENT_SECRET!
-const TILL_NUMBER   = process.env.KOPOKOPO_TILL_NUMBER!   // e.g. "K000000"
+const TILL_NUMBER   = process.env.KOPOKOPO_TILL_NUMBER!
 
 // Simple in-memory token cache (works fine in serverless with short-lived functions)
 let cachedToken: string | null = null
