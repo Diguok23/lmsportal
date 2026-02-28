@@ -67,7 +67,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       {/* MOBILE NAV */}
-      <AdminMobileNav navItems={navItems} profile={profile} user={user} />
+      <AdminMobileNav profile={profile} user={user} />
 
       {/* MAIN */}
       <div className="w-full md:ml-64 flex flex-1 flex-col">
