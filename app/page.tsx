@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { BookOpen, Award, Globe, Shield, ChevronRight, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -11,10 +11,13 @@ export default async function HomePage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (user) redirect('/dashboard')
 
-  const { data: programs } = await supabase
+  // Use service-role client to bypass RLS — programs are public content
+  const adminDb = createAdminClient()
+  const { data: programs } = await adminDb
     .from('programs')
     .select('id, title, description, price_cents, duration_weeks, level')
     .eq('is_published', true)
+    .order('created_at', { ascending: true })
     .limit(6)
 
   return (
@@ -143,7 +146,7 @@ export default async function HomePage() {
                     <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{program.description}</p>
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
                       <span className="text-lg font-bold text-primary">
-                        {program.price_cents === 0 ? 'Free' : `$${(program.price_cents / 100).toFixed(0)}`}
+                        {program.price_cents === 0 ? 'Free' : `KES ${(program.price_cents / 100).toLocaleString()}`}
                       </span>
                       <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                         <Link href={`/auth/register?program=${program.id}`}>Enroll</Link>
