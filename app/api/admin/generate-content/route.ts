@@ -1,5 +1,4 @@
 import { streamText } from 'ai'
-import { xai } from '@ai-sdk/xai'
 import { NextRequest } from 'next/server'
 
 export async function POST(request: NextRequest) {
@@ -59,15 +58,18 @@ Return only the JSON array, nothing else.`
 
   try {
     const result = streamText({
-      model: xai('grok-2-latest'),
+      model: 'openai/gpt-4o-mini',
       system: systemPrompt,
       prompt: userPrompt,
-      maxTokens: 4000,
+      maxOutputTokens: 4000,
     })
 
     return result.toTextStreamResponse()
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    return new Response(JSON.stringify({ error: msg }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: msg }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
