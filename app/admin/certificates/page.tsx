@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Award } from 'lucide-react'
@@ -11,7 +11,9 @@ export default async function AdminCertificatesPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: certs } = await supabase
+  const adminDb = createAdminClient()
+
+  const { data: certs } = await adminDb
     .from('certificates')
     .select('id, cert_id, issued_at, final_score, revoked, student_id, profiles(full_name), programs(title)')
     .order('issued_at', { ascending: false })
