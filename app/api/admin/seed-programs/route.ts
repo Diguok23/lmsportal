@@ -41,18 +41,18 @@ export async function POST() {
     // Check if programs already exist
     const { count } = await supabase.from('programs').select('id', { count: 'exact', head: true })
 
-    if (count && count > 0) {
+    if (count && count >= 30) {
       return NextResponse.json({ message: `Already seeded — ${count} programs exist.` })
     }
 
     const { data, error } = await supabase
       .from('programs')
-      .insert(PROGRAMS.map(p => ({ ...p, is_published: true })))
+      .upsert(PROGRAMS.map(p => ({ ...p, is_published: true })), { onConflict: 'title' })
       .select('id')
 
     if (error) throw error
 
-    return NextResponse.json({ message: `Successfully seeded ${data?.length} programs.` })
+    return NextResponse.json({ message: `Successfully seeded ${data?.length ?? 0} programs.` })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     return NextResponse.json({ error: msg }, { status: 500 })

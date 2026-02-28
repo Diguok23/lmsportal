@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -11,7 +11,9 @@ export default async function AdminProgramsPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: programs } = await supabase
+  // Use service-role client to bypass RLS and always see all programs
+  const adminDb = createAdminClient()
+  const { data: programs, error } = await adminDb
     .from('programs')
     .select('id, title, level, price_cents, duration_weeks, is_published, passing_score, created_at')
     .order('created_at', { ascending: false })
@@ -24,7 +26,7 @@ export default async function AdminProgramsPage() {
           <p className="mt-1 text-sm text-muted-foreground">{programs?.length ?? 0} certification programs</p>
         </div>
         <div className="flex items-center gap-3">
-          {(!programs || programs.length === 0) && <SeedProgramsButton />}
+          <SeedProgramsButton />
           <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
             <Link href="/admin/programs/new"><Plus className="h-4 w-4 mr-2" /> New Program</Link>
           </Button>
@@ -69,9 +71,8 @@ export default async function AdminProgramsPage() {
             ))}
             {(!programs || programs.length === 0) && (
               <tr>
-                <td colSpan={5} className="px-6 py-16 text-center">
-                  <p className="text-muted-foreground text-sm mb-4">No programs yet.</p>
-                  <SeedProgramsButton />
+                <td colSpan={5} className="px-6 py-16 text-center text-muted-foreground text-sm">
+                  No programs yet. Use the &quot;Seed 30 Sample Programs&quot; button above to get started.
                 </td>
               </tr>
             )}

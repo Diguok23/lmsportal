@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, ChevronRight, Award, Clock } from 'lucide-react'
@@ -21,13 +21,16 @@ export default async function ProgramsPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
+  // Use service-role to bypass RLS for published program reads
+  const adminDb = createAdminClient()
+
   const { data: enrollments } = await supabase
     .from('enrollments')
     .select('id, status, enrolled_at, programs(id, title, description, duration_weeks, level, price_cents)')
     .eq('student_id', user.id)
     .order('enrolled_at', { ascending: false })
 
-  let query = supabase
+  let query = adminDb
     .from('programs')
     .select('id, title, description, price_cents, duration_weeks, level')
     .eq('is_published', true)
