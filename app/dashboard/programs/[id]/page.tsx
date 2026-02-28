@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, CheckCircle, Circle, ChevronRight, Lock } from 'lucide-react'
@@ -11,7 +11,9 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: program } = await supabase
+  // Use service-role to bypass RLS for reading program content
+  const adminDb = createAdminClient()
+  const { data: program } = await adminDb
     .from('programs')
     .select('*, modules(id, title, description, sort_order, lessons(id, title, is_published, sort_order))')
     .eq('id', id)
@@ -73,7 +75,7 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
           <p className="text-sm text-muted-foreground">Enroll to access lessons and assessments</p>
           <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
             <Link href={`/dashboard/programs/${id}/enroll`}>
-              {program.price_cents === 0 ? 'Enroll Free' : `Enroll — $${(program.price_cents / 100).toFixed(0)}`}
+              {program.price_cents === 0 ? 'Enroll Free' : `Enroll — KES ${(program.price_cents / 100).toLocaleString()}`}
             </Link>
           </Button>
         </div>
