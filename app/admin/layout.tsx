@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -10,13 +10,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase
+  // Use service role client to bypass RLS when checking admin status
+  const adminClient = createAdminClient()
+  const { data: profile } = await adminClient
     .from('profiles')
     .select('is_admin, full_name')
     .eq('id', user.id)
     .single()
 
-  if (!profile?.is_admin) redirect('/dashboard')
+  if (!profile || profile.is_admin !== true) redirect('/dashboard')
 
   const navItems = [
     { href: '/admin', icon: LayoutDashboard, label: 'Overview' },
