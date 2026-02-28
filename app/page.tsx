@@ -55,9 +55,6 @@ export default async function HomePage() {
         </div>
         <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32">
           <div className="mx-auto max-w-3xl text-center">
-            <Badge className="mb-6 bg-accent/20 text-accent border-accent/30 text-xs tracking-widest uppercase px-4 py-1">
-              AI-Powered Certification
-            </Badge>
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-balance md:text-5xl lg:text-6xl">
               Advance Your Career with Globally Recognised Certifications
             </h1>
@@ -68,7 +65,7 @@ export default async function HomePage() {
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold px-10">
                 <Link href="/auth/register">Get Started</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/30 text-primary-foreground hover:bg-white/10">
+              <Button asChild size="lg" className="border border-white/50 bg-transparent text-primary-foreground hover:bg-white/10">
                 <Link href="#programs">Browse Programs <ChevronRight className="ml-1 h-4 w-4" /></Link>
               </Button>
             </div>
@@ -237,7 +234,7 @@ export default async function HomePage() {
             <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold px-10">
               <Link href="/auth/register">Create Free Account</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white/30 text-primary-foreground hover:bg-white/10">
+            <Button asChild size="lg" className="border border-white/50 bg-transparent text-primary-foreground hover:bg-white/10">
               <Link href="/verify">Verify a Certificate</Link>
             </Button>
           </div>
