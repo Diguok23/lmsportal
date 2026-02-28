@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { LogOut, LayoutDashboard, BookOpen, Award, User, Menu, X } from 'lucide-react'
+import { LogOut, LayoutDashboard, BookOpen, Award, User } from 'lucide-react'
 import { DashboardMobileNav } from '@/components/dashboard-mobile-nav'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
