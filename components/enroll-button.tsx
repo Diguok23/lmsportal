@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { loadStripe } from '@stripe/stripe-js'
+import { EnrollmentPayment } from '@/components/enrollment-payment'
 
 interface Props {
   programId: string
@@ -16,6 +16,7 @@ export default function EnrollButton({ programId, price, title }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPayment, setShowPayment] = useState(false)
 
   async function handleEnroll() {
     setLoading(true)
@@ -39,18 +40,23 @@ export default function EnrollButton({ programId, price, title }: Props) {
       return
     }
 
-    // Paid: create Stripe checkout session
-    const res = await fetch('/api/payments/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ programId }),
-    })
-    const data = await res.json()
-    if (!res.ok) { setError(data.error ?? 'Payment error'); setLoading(false); return }
+    // Paid: show payment form
+    setShowPayment(true)
+    setLoading(false)
+  }
 
-    if (data.url) {
-      window.location.href = data.url
-    }
+  if (showPayment) {
+    return (
+      <EnrollmentPayment
+        programId={programId}
+        programTitle={title}
+        amount={price / 100}
+        onSuccess={() => {
+          router.push(`/dashboard/programs/${programId}`)
+          router.refresh()
+        }}
+      />
+    )
   }
 
   return (
@@ -63,3 +69,4 @@ export default function EnrollButton({ programId, price, title }: Props) {
     </div>
   )
 }
+

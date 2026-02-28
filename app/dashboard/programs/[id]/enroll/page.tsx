@@ -47,7 +47,7 @@ export default async function EnrollPage({ params }: { params: Promise<{ id: str
         <div className="flex items-center justify-between border-t border-border pt-4">
           <div>
             <p className="text-2xl font-bold text-primary">
-              {program.price_cents === 0 ? 'Free' : `$${(program.price_cents / 100).toFixed(2)}`}
+              {program.price_cents === 0 ? 'Free' : `KES ${(program.price_cents / 100).toLocaleString()}`}
             </p>
             <p className="text-xs text-muted-foreground">one-time payment</p>
           </div>

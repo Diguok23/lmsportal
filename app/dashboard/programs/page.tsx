@@ -71,7 +71,7 @@ export default async function ProgramsPage() {
                 <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{p.description}</p>
                 <div className="flex items-center justify-between mt-auto pt-3 border-t border-border">
                   <span className="text-sm font-bold text-primary">
-                    {p.price_cents === 0 ? 'Free' : `$${(p.price_cents / 100).toFixed(0)}`}
+                    {p.price_cents === 0 ? 'Free' : `KES ${(p.price_cents / 100).toLocaleString()}`}
                   </span>
                   <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs">
                     <Link href={`/dashboard/programs/${p.id}/enroll`}>Enroll Now</Link>
