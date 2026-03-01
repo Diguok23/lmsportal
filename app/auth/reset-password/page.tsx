@@ -19,9 +19,8 @@ export default function ResetPasswordPage() {
     setError('')
     setLoading(true)
     const supabase = createClient()
-    const redirectTo = typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/update-password`
-      : '/auth/update-password'
+    // Use full domain for production — adjust based on environment
+    const redirectTo = 'https://iicar.org/auth/update-password'
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
     if (error) { setError(error.message); setLoading(false); return }
     setSent(true)
