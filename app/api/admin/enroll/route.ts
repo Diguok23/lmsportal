@@ -2,6 +2,18 @@ import { NextResponse } from 'next/server'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { initiateSTKPush } from '@/lib/kopokopo'
 
+async function sendEnrollmentNotification(email: string, studentName: string, programTitle: string) {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://iicar.org'}/api/email/enrollment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, studentName, programTitle }),
+    })
+  } catch (err) {
+    console.error('[v0] Failed to send enrollment notification:', err)
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
@@ -33,13 +45,18 @@ export async function POST(request: Request) {
       .single()
     if (!program) return NextResponse.json({ error: 'Program not found' }, { status: 404 })
 
-    // Fetch student profile
+    // Fetch student profile including email
     const { data: studentProfile } = await adminDb
       .from('profiles')
-      .select('id, full_name, phone')
+      .select('id, full_name, phone, email')
       .eq('id', studentId)
       .single()
     if (!studentProfile) return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+
+    // Get student email from auth
+    const { data: authUsers } = await adminDb.auth.admin.listUsers()
+    const studentAuthUser = authUsers?.users.find(u => u.id === studentId)
+    const studentEmail = studentAuthUser?.email || studentProfile.email
 
     if (paymentMethod === 'already_paid') {
       // Upsert enrollment as active immediately
@@ -64,6 +81,11 @@ export async function POST(request: Request) {
         paid_at:      new Date().toISOString(),
         kopokopo_reference: 'ADMIN_MANUAL',
       })
+
+      // Send enrollment email
+      if (studentEmail) {
+        await sendEnrollmentNotification(studentEmail, studentProfile.full_name || 'Student', program.title)
+      }
 
       return NextResponse.json({
         success: true,

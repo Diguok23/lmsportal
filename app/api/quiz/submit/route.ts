@@ -1,6 +1,30 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+async function sendExamNotification(email: string, studentName: string, programTitle: string, score: number) {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://iicar.org'}/api/email/exam-completion`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, studentName, programTitle, score }),
+    })
+  } catch (err) {
+    console.error('[v0] Failed to send exam notification:', err)
+  }
+}
+
+async function sendCertificateNotification(email: string, studentName: string, programTitle: string, certificatePdfUrl: string) {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://iicar.org'}/api/email/certificate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, studentName, programTitle, certificatePdfUrl }),
+    })
+  } catch (err) {
+    console.error('[v0] Failed to send certificate notification:', err)
+  }
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -42,6 +66,13 @@ export async function POST(request: Request) {
   const passingScore = program?.passing_score ?? 70
   const passed = score >= passingScore
 
+  // Fetch student info for emails
+  const { data: studentProfile } = await adminDb
+    .from('profiles')
+    .select('full_name, email')
+    .eq('id', user.id)
+    .single()
+
   // Record attempt via user-scoped client (RLS: student_id = auth.uid())
   await supabase.from('exam_attempts').insert({
     student_id: user.id,
@@ -52,6 +83,22 @@ export async function POST(request: Request) {
     passed,
     answers,
   })
+
+  // If final exam: send completion email
+  if (type === 'final_exam' && studentProfile) {
+    const programTitle = (await adminDb
+      .from('programs')
+      .select('title')
+      .eq('id', programId)
+      .single()).data?.title || 'Program'
+    
+    await sendExamNotification(
+      studentProfile.email || user.email || '',
+      studentProfile.full_name || 'Student',
+      programTitle,
+      score
+    )
+  }
 
   // If final exam passed: issue certificate + complete enrollment via admin client
   if (type === 'final_exam' && passed) {
@@ -69,6 +116,24 @@ export async function POST(request: Request) {
       .update({ status: 'completed', completed_at: new Date().toISOString() })
       .eq('student_id', user.id)
       .eq('program_id', programId)
+
+    // Send certificate email
+    if (studentProfile) {
+      const programTitle = (await adminDb
+        .from('programs')
+        .select('title')
+        .eq('id', programId)
+        .single()).data?.title || 'Program'
+      
+      const certificatePdfUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://iicar.org'}/api/certificate/download/${certId}`
+      
+      await sendCertificateNotification(
+        studentProfile.email || user.email || '',
+        studentProfile.full_name || 'Student',
+        programTitle,
+        certificatePdfUrl
+      )
+    }
   }
 
   return NextResponse.json({ score, passed })
