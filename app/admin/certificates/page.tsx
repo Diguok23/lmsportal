@@ -1,7 +1,7 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Award } from 'lucide-react'
+import { Award, Download } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import RevokeCertButton from '@/components/admin/revoke-cert-button'
@@ -52,6 +52,11 @@ export default async function AdminCertificatesPage() {
                     </Badge>
                   </td>
                   <td className="px-5 py-3 text-right flex items-center justify-end gap-2">
+                    <Button asChild variant="ghost" size="sm" className="text-xs">
+                      <Link href={`/api/certificate/download/${cert.cert_id}`} download>
+                        <Download className="h-3 w-3" />
+                      </Link>
+                    </Button>
                     <Button asChild variant="ghost" size="sm" className="text-xs">
                       <Link href={`/verify?id=${cert.cert_id}`} target="_blank">Verify</Link>
                     </Button>
