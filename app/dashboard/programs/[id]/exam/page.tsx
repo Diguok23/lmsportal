@@ -1,5 +1,8 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
+import { Award } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import QuizEngine from '@/components/quiz-engine'
 
 export default async function FinalExamPage({
@@ -56,8 +59,33 @@ export default async function FinalExamPage({
 
   const attemptsUsed = attempts?.length ?? 0
   const passed = attempts?.some(a => a.passed)
+  const passedAttempt = passed ? attempts?.find(a => a.passed) : null
 
-  if (passed) redirect(`/dashboard/programs/${programId}`)
+  if (passed && passedAttempt) {
+    return (
+      <div className="max-w-2xl flex flex-col gap-6 py-16 mx-auto">
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100">
+              <Award className="h-9 w-9 text-emerald-600" />
+            </div>
+          </div>
+          <h2 className="text-3xl font-bold text-foreground mb-2">Congratulations!</h2>
+          <p className="text-muted-foreground mb-1">You have successfully completed the final exam</p>
+          <p className="text-sm text-muted-foreground font-mono">{passedAttempt.score}% — Passed</p>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-11 text-base font-semibold">
+            <Link href={`/dashboard/certificates`}>View Your Certificate</Link>
+          </Button>
+          <Button asChild variant="outline" className="w-full h-11 text-base font-semibold">
+            <Link href={`/dashboard/programs/${programId}`}>Back to Program</Link>
+          </Button>
+        </div>
+      </div>
+    )
+  }
   if (attemptsUsed >= program.max_attempts && !passed) {
     return (
       <div className="max-w-2xl flex flex-col gap-4 py-20 text-center mx-auto">

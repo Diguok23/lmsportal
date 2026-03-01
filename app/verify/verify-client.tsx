@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -30,14 +29,15 @@ export default function VerifyPageClient() {
     if (!certId.trim()) return
     setLoading(true)
     setResult(null)
-    const supabase = createClient()
-    const { data } = await supabase
-      .from('certificates')
-      .select('cert_id, issued_at, final_score, revoked, profiles(full_name, country), programs(title, level)')
-      .eq('cert_id', certId.trim().toUpperCase())
-      .single()
-    setResult(data ?? 'not-found')
-    setLoading(false)
+    try {
+      const res = await fetch(`/api/verify-certificate?id=${certId.trim().toUpperCase()}`)
+      const data = await res.json()
+      setResult(res.ok ? data : 'not-found')
+    } catch {
+      setResult('not-found')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
