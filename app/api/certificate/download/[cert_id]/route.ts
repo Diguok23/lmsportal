@@ -1,161 +1,149 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
-import PDFDocument from 'pdfkit'
+import { NextResponse } from 'next/server'
+import { jsPDF } from 'jspdf'
 
 export async function GET(
-  request: NextRequest,
+  request: Request,
   { params }: { params: Promise<{ cert_id: string }> }
 ) {
   const { cert_id } = await params
-  
-  // Fetch certificate from database
-  const adminDb = createAdminClient()
-  const { data: cert } = await adminDb
-    .from('certificates')
-    .select('cert_id, issued_at, final_score, student_id, program_id, profiles(full_name), programs(title, level)')
-    .eq('cert_id', cert_id)
-    .single()
+  if (!cert_id) return NextResponse.json({ error: 'No certificate ID provided' }, { status: 400 })
 
-  if (!cert) {
-    return NextResponse.json({ error: 'Certificate not found' }, { status: 404 })
-  }
+  try {
+    const adminDb = createAdminClient()
+    const { data: cert, error } = await adminDb
+      .from('certificates')
+      .select('cert_id, issued_at, final_score, student_id, program_id, profiles(full_name), programs(title)')
+      .eq('cert_id', cert_id.toUpperCase())
+      .single()
 
-  const profile = cert.profiles as { full_name: string } | null
-  const program = cert.programs as { title: string; level: string } | null
+    if (error || !cert) {
+      return NextResponse.json({ error: 'Certificate not found' }, { status: 404 })
+    }
 
-  // Create PDF
-  const doc = new PDFDocument({
-    size: 'A4',
-    margin: 0,
-  })
+    // Generate PDF using jsPDF
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+    })
 
-  // Convert stream to buffer
-  const chunks: Buffer[] = []
-  doc.on('data', chunk => chunks.push(chunk))
-  
-  await new Promise((resolve, reject) => {
-    doc.on('end', resolve)
-    doc.on('error', reject)
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const pageHeight = doc.internal.pageSize.getHeight()
 
-    // Certificate background gradient (light gold)
-    doc.rect(0, 0, 612, 792).fill('#fffef5')
+    // Background color (light gold)
+    doc.setFillColor(255, 251, 235)
+    doc.rect(0, 0, pageWidth, pageHeight, 'F')
 
-    // Border
-    doc.lineWidth(3)
-    doc.strokeColor('#8b7355')
-    doc.rect(30, 30, 552, 732)
+    // Border (dark goldenrod)
+    doc.setDrawColor(184, 134, 11)
+    doc.setLineWidth(3)
+    doc.rect(10, 10, pageWidth - 20, pageHeight - 20)
 
     // Inner border
-    doc.lineWidth(1)
-    doc.strokeColor('#d4af37')
-    doc.rect(50, 50, 512, 692)
+    doc.setLineWidth(1)
+    doc.rect(12, 12, pageWidth - 24, pageHeight - 24)
 
-    // Header with school name
-    doc.fontSize(36)
-    doc.fillColor('#1a1a1a')
-    doc.font('Helvetica-Bold')
-    doc.text('IICAR', 0, 80, { align: 'center', width: 612 })
+    // School name (top)
+    doc.setFont('times', 'bold')
+    doc.setFontSize(28)
+    doc.setTextColor(184, 134, 11)
+    doc.text('IICAR', pageWidth / 2, 35, { align: 'center' })
 
-    doc.fontSize(14)
-    doc.fillColor('#666')
-    doc.font('Helvetica')
-    doc.text('Professional School', 0, 125, { align: 'center', width: 612 })
+    doc.setFont('times', 'normal')
+    doc.setFontSize(12)
+    doc.setTextColor(80, 80, 80)
+    doc.text('International Institute for Certified Administrative Resources', pageWidth / 2, 42, { align: 'center' })
 
-    // Logo placeholder (centered)
-    doc.fontSize(48)
-    doc.fillColor('#d4af37')
-    doc.text('🎓', 0, 165, { align: 'center', width: 612 })
+    // Certificate title
+    doc.setFont('times', 'bold')
+    doc.setFontSize(32)
+    doc.setTextColor(0, 0, 0)
+    doc.text('Certificate of Completion', pageWidth / 2, 62, { align: 'center' })
 
-    // Main title
-    doc.fontSize(24)
-    doc.fillColor('#1a1a1a')
-    doc.font('Helvetica-Bold')
-    doc.text('Certificate of Completion', 0, 240, { align: 'center', width: 612 })
+    // Decorative line
+    doc.setDrawColor(184, 134, 11)
+    doc.setLineWidth(0.5)
+    doc.line(50, 68, pageWidth - 50, 68)
 
-    // Certificate text
-    doc.fontSize(12)
-    doc.fillColor('#333')
-    doc.font('Helvetica')
-    doc.text('This is to certify that', 0, 280, { align: 'center', width: 612 })
+    // Certificate body text
+    doc.setFont('times', 'normal')
+    doc.setFontSize(12)
+    doc.setTextColor(0, 0, 0)
 
-    // Recipient name (underlined)
-    doc.fontSize(16)
-    doc.font('Helvetica-Bold')
-    doc.fillColor('#1a1a1a')
-    doc.text(profile?.full_name || 'Student', 80, 310, { width: 452, align: 'center' })
-    doc.moveTo(80, 330).lineTo(532, 330).stroke()
+    doc.text('This is to certify that', pageWidth / 2, 80, { align: 'center' })
 
-    // Program info
-    doc.fontSize(12)
-    doc.font('Helvetica')
-    doc.fillColor('#333')
-    doc.text(`has successfully completed the professional certification program`, 0, 360, { align: 'center', width: 612 })
-    
-    doc.fontSize(14)
-    doc.font('Helvetica-Bold')
-    doc.fillColor('#1a1a1a')
-    doc.text(program?.title || 'Professional Certification', 0, 385, { align: 'center', width: 612 })
+    // Student name
+    doc.setFont('times', 'bold')
+    doc.setFontSize(18)
+    doc.setTextColor(0, 0, 0)
+    const studentName = cert.profiles && typeof cert.profiles === 'object' && 'full_name' in cert.profiles 
+      ? cert.profiles.full_name 
+      : 'Unknown Student'
+    doc.text(studentName, pageWidth / 2, 92, { align: 'center' })
 
-    // Level and score
-    doc.fontSize(11)
-    doc.font('Helvetica')
-    doc.fillColor('#666')
-    const levelText = program?.level ? `${program.level.charAt(0).toUpperCase() + program.level.slice(1)} Level` : 'Professional Level'
-    const scoreText = cert.final_score ? ` · Final Score: ${cert.final_score}%` : ''
-    doc.text(levelText + scoreText, 0, 415, { align: 'center', width: 612 })
+    // Body text continued
+    doc.setFont('times', 'normal')
+    doc.setFontSize(12)
+    doc.setTextColor(0, 0, 0)
+    doc.text('has successfully completed the professional certification program in', pageWidth / 2, 105, { align: 'center' })
+
+    // Program title
+    doc.setFont('times', 'bold')
+    doc.setFontSize(14)
+    doc.setTextColor(0, 0, 0)
+    const programTitle = cert.programs && typeof cert.programs === 'object' && 'title' in cert.programs
+      ? cert.programs.title
+      : 'Professional Development'
+    doc.text(programTitle, pageWidth / 2, 115, { align: 'center' })
+
+    // Score
+    doc.setFont('times', 'normal')
+    doc.setFontSize(11)
+    doc.setTextColor(80, 80, 80)
+    if (cert.final_score) {
+      doc.text(`Final Score: ${cert.final_score}%`, pageWidth / 2, 127, { align: 'center' })
+    }
 
     // Date issued
-    const issuedDate = new Date(cert.issued_at).toLocaleDateString('en-GB', { 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
+    const issueDate = new Date(cert.issued_at).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
     })
-    doc.fontSize(11)
-    doc.fillColor('#333')
-    doc.text(`Issued: ${issuedDate}`, 0, 450, { align: 'center', width: 612 })
+    doc.text(`Issued: ${issueDate}`, pageWidth / 2, 135, { align: 'center' })
 
     // Certificate ID
-    doc.fontSize(9)
-    doc.fillColor('#999')
-    doc.font('Helvetica')
-    doc.text(`Certificate ID: ${cert_id}`, 0, 475, { align: 'center', width: 612 })
+    doc.setFont('courier', 'normal')
+    doc.setFontSize(9)
+    doc.setTextColor(100, 100, 100)
+    doc.text(`Certificate ID: ${cert.cert_id}`, pageWidth / 2, 148, { align: 'center' })
 
-    // Signature section
-    doc.fontSize(10)
-    doc.fillColor('#333')
-    doc.font('Helvetica')
-    doc.text('Signed by:', 80, 530)
-    
-    // Principal name (with line for signature)
-    doc.moveTo(80, 555).lineTo(280, 555).stroke()
-    doc.fontSize(10)
-    doc.text('Principal Malinar Hellen', 80, 560)
-    
-    doc.fontSize(9)
-    doc.fillColor('#666')
-    doc.text('IICAR Professional School', 80, 575)
+    // Signature lines
+    doc.setLineWidth(0.5)
+    doc.line(30, 165, 60, 165)
+    doc.line(pageWidth - 60, 165, pageWidth - 30, 165)
 
-    // Seal/badge placeholder
-    doc.fontSize(36)
-    doc.fillColor('#d4af37')
-    doc.text('★', 480, 540, { align: 'center', width: 80 })
+    doc.setFont('times', 'normal')
+    doc.setFontSize(10)
+    doc.setTextColor(0, 0, 0)
+    doc.text('Authorized Signature', 45, 170, { align: 'center' })
+    doc.text('Principal: Malinar Hellen', pageWidth - 45, 170, { align: 'center' })
 
-    // Footer
-    doc.fontSize(9)
-    doc.fillColor('#999')
-    doc.text('This certificate is a formal recognition of professional achievement.', 0, 650, { align: 'center', width: 612 })
-    doc.text('For verification, visit: iicar.school/verify', 0, 665, { align: 'center', width: 612 })
+    // Generate PDF buffer
+    const pdfBuffer = Buffer.from(doc.output('arraybuffer'))
 
-    doc.end()
-  })
-
-  const pdfBuffer = Buffer.concat(chunks)
-
-  return new NextResponse(pdfBuffer, {
-    headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${profile?.full_name || 'Certificate'} - ${program?.title || 'Certificate'}.pdf"`,
-      'Cache-Control': 'no-cache',
-    },
-  })
+    // Return as downloadable file
+    return new NextResponse(pdfBuffer, {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${cert.cert_id}_certificate.pdf"`,
+        'Cache-Control': 'no-cache',
+      },
+    })
+  } catch (err) {
+    console.error('[v0] Certificate PDF error:', err)
+    return NextResponse.json({ error: 'Failed to generate certificate PDF' }, { status: 500 })
+  }
 }
+
