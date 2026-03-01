@@ -37,21 +37,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    console.log('[v0] Enroll request:', { studentId, programId, paymentMethod, phoneNumber })
+
     // Fetch program for price
     const { data: program } = await adminDb
       .from('programs')
       .select('id, title, price_cents')
       .eq('id', programId)
       .single()
+    console.log('[v0] Program found:', program ? `${program.title} (${program.id})` : 'NOT FOUND')
     if (!program) return NextResponse.json({ error: 'Program not found' }, { status: 404 })
 
     // Fetch student profile including email
-    const { data: studentProfile } = await adminDb
+    const { data: studentProfile, error: profileError } = await adminDb
       .from('profiles')
       .select('id, full_name, phone, email')
       .eq('id', studentId)
       .single()
-    if (!studentProfile) return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+    console.log('[v0] Student profile query:', { studentId, found: !!studentProfile, error: profileError?.message })
+    if (!studentProfile) {
+      // Try to check if student exists in auth but not profiles
+      const { data: authList } = await adminDb.auth.admin.listUsers()
+      const authExists = authList?.users.some(u => u.id === studentId)
+      return NextResponse.json({
+        error: `Student not found (ID: ${studentId})${authExists ? ' - exists in auth but no profile created yet' : ' - does not exist in database'}`,
+      }, { status: 404 })
+    }
 
     // Get student email from auth
     const { data: authUsers } = await adminDb.auth.admin.listUsers()
