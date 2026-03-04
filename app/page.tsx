@@ -28,8 +28,8 @@ export default async function HomePage() {
           <Link href="/" className="flex items-center gap-3">
             <Image src="/logo.jpg" alt="IICAR logo" width={44} height={44} className="rounded-lg" priority />
             <div className="hidden sm:block">
-              <p className="text-xs font-bold uppercase tracking-widest text-accent">IICAR Global College</p>
-              <p className="text-[10px] text-primary-foreground/50 leading-tight">Institute of International Career Advancement</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-accent">The IILPD Learning Portal</p>
+              <p className="text-[10px] text-primary-foreground/50 leading-tight">The International Institute for Leadership & Public Development (IILPD)</p>
             </div>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
@@ -56,10 +56,10 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-balance md:text-5xl lg:text-6xl">
-              Advance Your Career with Globally Recognised Certifications
+              Welcome to the IILPD Learning Portal
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-primary-foreground/90 text-pretty">
-              IICAR Global College delivers structured, self-paced professional certification programs powered by AI-assisted academic content. Learn at your pace — earn credentials that open doors.
+              The IILPD Learning Portal is the official digital training platform designed to support learners undertaking professional development, leadership, and industry-focused certification programs.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold px-10">
@@ -92,14 +92,14 @@ export default async function HomePage() {
       <section className="py-20 bg-gradient-to-b from-background to-muted/30">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-14 text-center">
-            <h2 className="text-3xl font-bold text-primary">Why Choose IICAR?</h2>
+            <h2 className="text-3xl font-bold text-primary">Your Learning Experience on the IILPD Portal</h2>
             <p className="mt-3 text-muted-foreground">Everything you need for a recognised professional qualification</p>
           </div>
           <div className="grid gap-8 lg:grid-cols-2">
             {/* Feature Cards */}
             <div className="grid gap-8 md:grid-cols-2">
               {[
-                { icon: BookOpen, title: 'AI-Assisted Content', desc: 'Structured curriculum generated and refined with AI, reviewed by domain experts for accuracy.' },
+                { icon: BookOpen, title: 'AI-Assisted Content', desc: 'Structured curriculum generated and refined with International Starndards, reviewed by domain experts for accuracy.' },
                 { icon: Award, title: 'Verifiable Certificates', desc: 'Every certificate carries a unique ID instantly verifiable on our public portal.' },
                 { icon: Globe, title: 'Learn Anywhere', desc: 'Fully self-paced and accessible on any device from any country, 24/7.' },
                 { icon: Shield, title: 'Rigorous Standards', desc: 'Built on transparent academic standards with proctored assessments and structured grading.' },
@@ -176,7 +176,7 @@ export default async function HomePage() {
                 { step: '01', title: 'Register & Enroll', desc: 'Create your account and enroll in your chosen certification program.' },
                 { step: '02', title: 'Learn at Your Pace', desc: 'Access AI-assisted lessons organised by module. Study on any device, anytime.' },
                 { step: '03', title: 'Pass Assessments', desc: 'Complete module quizzes and a final exam to demonstrate your mastery.' },
-                { step: '04', title: 'Get Certified', desc: 'Receive a verifiable digital certificate with a unique IICAR ID upon completion.' },
+                { step: '04', title: 'Get Certified', desc: 'Receive a verifiable digital certificate with a unique IILPD ID upon completion.' },
               ].map(({ step, title, desc }) => (
                 <div key={step} className="flex flex-col items-start text-left gap-4 p-6 rounded-xl bg-background border border-border">
                   <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-accent bg-primary text-accent font-bold text-lg">
@@ -201,9 +201,9 @@ export default async function HomePage() {
           <h2 className="mb-14 text-center text-3xl font-bold">What Our Students Say</h2>
           <div className="grid gap-8 md:grid-cols-3">
             {[
-              { name: 'Amara N.', country: 'Nigeria', quote: 'IICAR gave me a credential that opened doors I never thought possible. The AI-powered content is genuinely excellent.' },
-              { name: 'Raj P.', country: 'India', quote: 'I completed my certification while working full time. The self-paced structure is exactly what busy professionals need.' },
-              { name: 'Sofia M.', country: 'Brazil', quote: 'The verification feature is fantastic — my employer confirmed my certificate within minutes. Highly professional.' },
+              { name: 'Lydia Wanjiru.', country: 'Kenya', quote: 'IILPD gave me a credential that opened doors I never thought possible. The real content is genuinely excellent.' },
+              { name: 'Raj P.', country: 'Rwanda', quote: 'I completed my certification while working full time. The self-paced structure is exactly what busy professionals need.' },
+              { name: 'Dembe W.', country: 'Uganda', quote: 'The verification feature is fantastic — my employer confirmed my certificate within minutes. Highly professional.' },
             ].map(({ name, country, quote }) => (
               <div key={name} className="rounded-xl bg-white/10 backdrop-blur-sm p-6 flex flex-col gap-4 border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex gap-1">
@@ -229,7 +229,7 @@ export default async function HomePage() {
             Limited Time Offer
           </Badge>
           <h2 className="text-4xl font-bold leading-tight md:text-5xl">Ready to Advance Your Career?</h2>
-          <p className="mt-6 text-lg text-primary-foreground/80 leading-relaxed">Join thousands of professionals who have earned globally recognised IICAR certifications. Start your journey today with a free account.</p>
+          <p className="mt-6 text-lg text-primary-foreground/80 leading-relaxed">Join thousands of professionals who have earned globally recognised IILDP certifications. Start your journey today with a free account.</p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold px-10">
               <Link href="/auth/register">Create Free Account</Link>
@@ -247,10 +247,10 @@ export default async function HomePage() {
           <div className="grid gap-8 md:grid-cols-4 mb-12">
             <div className="md:col-span-1">
               <div className="flex items-center gap-3 mb-4">
-                <Image src="/logo.jpg" alt="IICAR" width={40} height={40} className="rounded-md" />
+                <Image src="/logo.jpg" alt="IILDP" width={40} height={40} className="rounded-md" />
                 <div>
-                  <p className="text-sm font-bold text-accent">IICAR</p>
-                  <p className="text-xs text-primary-foreground/50">Global College</p>
+                  <p className="text-sm font-bold text-accent">IILDP</p>
+                  <p className="text-xs text-primary-foreground/50">The International Institute for Leadership & Public Development (IILPD)</p>
                 </div>
               </div>
               <p className="text-xs text-primary-foreground/60 leading-relaxed">Professional certification platform powering careers globally.</p>
@@ -283,7 +283,7 @@ export default async function HomePage() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-xs text-primary-foreground/40">&copy; {new Date().getFullYear()} IICAR Global College. All rights reserved.</p>
               <div className="flex gap-6 text-xs text-primary-foreground/60">
-                <span>Institute of International Career Advancement and Recognition</span>
+                <span>The International Institute for Leadership & Public Development (IILPD)</span>
               </div>
             </div>
           </div>
