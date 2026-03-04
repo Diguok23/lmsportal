@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { LogOut, LayoutDashboard, BookOpen, Award, User } from 'lucide-react'
 import { DashboardMobileNav } from '@/components/dashboard-mobile-nav'
+import { ThemeSelector } from '@/components/theme-selector'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -55,12 +56,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <p className="text-xs font-medium text-sidebar-foreground truncate">{profile?.full_name ?? user.email}</p>
             <p className="text-[11px] text-sidebar-foreground/40 truncate">{user.email}</p>
           </div>
-          <form action="/auth/logout" method="post">
-            <button type="submit"
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
-              <LogOut className="h-3.5 w-3.5" /> Sign Out
-            </button>
-          </form>
+          <div className="flex gap-2 mb-2">
+            <form action="/auth/logout" method="post" className="flex-1">
+              <button type="submit"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
+                <LogOut className="h-3.5 w-3.5" /> Sign Out
+              </button>
+            </form>
+            <ThemeSelector />
+          </div>
         </div>
       </aside>
 
