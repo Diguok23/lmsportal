@@ -60,6 +60,9 @@ export default async function HomePage() {
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-primary-foreground/90 text-pretty">
 The IILPD Learning Portal is the official digital training platform designed to support learners undertaking professional development, leadership, and industry-focused certification programs.
+Participants can access structured courses, learning resources, assessments, and progress tracking tools to support continuous professional growth and successful certification.
+
+
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold px-10">
