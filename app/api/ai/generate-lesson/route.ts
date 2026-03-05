@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { generateText, createOpenAI } from 'ai'
+import { generateText } from 'ai'
+import { createOpenAI } from '@ai-sdk/openai'
 
 const xai = createOpenAI({
   baseURL: 'https://api.x.ai/v1',

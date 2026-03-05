@@ -1,4 +1,5 @@
-import { streamText, createOpenAI } from 'ai'
+import { streamText } from 'ai'
+import { createOpenAI } from '@ai-sdk/openai'
 import { NextRequest } from 'next/server'
 
 const xai = createOpenAI({
