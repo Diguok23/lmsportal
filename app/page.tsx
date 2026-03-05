@@ -59,7 +59,7 @@ export default async function HomePage() {
               Advance Your Career with Globally Recognised Certifications
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-primary-foreground/90 text-pretty">
-              IICAR Global College delivers structured, self-paced professional certification programs powered by AI-assisted academic content. Learn at your pace — earn credentials that open doors.
+              IILPD Global College delivers structured, self-paced professional certification programs powered by AI-assisted academic content. Learn at your pace — earn credentials that open doors.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold px-10">
