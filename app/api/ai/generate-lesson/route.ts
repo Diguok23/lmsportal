@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { generateText } from 'ai'
+import { generateText, createOpenAI } from 'ai'
+
+const xai = createOpenAI({
+  baseURL: 'https://api.x.ai/v1',
+  apiKey: process.env.XAI_API_KEY,
+})
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -24,7 +29,7 @@ Write in a clear, professional academic tone suitable for working professionals.
 
   try {
     const { text } = await generateText({
-      model: 'openai/gpt-4o-mini',
+      model: xai('grok-beta'),
       prompt,
       maxTokens: 1200,
       temperature: 0.7,

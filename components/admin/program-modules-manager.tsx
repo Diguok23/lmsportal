@@ -114,6 +114,7 @@ export default function ProgramModulesManager({
         raw += decoder.decode(value, { stream: true })
       }
     }
+    console.log('Raw AI response:', raw)
     return raw.trim()
   }
 
@@ -129,7 +130,17 @@ export default function ProgramModulesManager({
         duration_weeks: durationWeeks,
         type: 'modules',
       })
-      const parsed = JSON.parse(raw)
+      let parsed
+      try {
+        parsed = JSON.parse(raw)
+      } catch (parseError) {
+        const jsonMatch = raw.match(/\[[\s\S]*\]/)
+        if (jsonMatch) {
+          parsed = JSON.parse(jsonMatch[0])
+        } else {
+          throw new Error(`Failed to parse JSON: ${parseError.message}. Raw response: ${raw.slice(0, 200)}...`)
+        }
+      }
       if (!Array.isArray(parsed)) throw new Error('Unexpected response format')
       setModules(parsed.map((m: Module) => ({ ...m, content: null })))
       setExpandedIdx(0)
@@ -156,7 +167,17 @@ export default function ProgramModulesManager({
         module_title: mod.title,
         module_topics: mod.topics,
       })
-      const content: ModuleContent = JSON.parse(raw)
+      let content: ModuleContent
+      try {
+        content = JSON.parse(raw)
+      } catch (parseError) {
+        const jsonMatch = raw.match(/\{[\s\S]*\}/)
+        if (jsonMatch) {
+          content = JSON.parse(jsonMatch[0])
+        } else {
+          throw new Error(`Failed to parse JSON: ${parseError.message}. Raw response: ${raw.slice(0, 200)}...`)
+        }
+      }
       setModules(prev => prev.map((m, i) => i === idx ? { ...m, content } : m))
       setExpandedTopicIdx(prev => ({ ...prev, [idx]: 0 }))
     } catch (e) {
@@ -183,7 +204,18 @@ export default function ProgramModulesManager({
         module_title: mod.title,
         module_topics: mod.topics,
       })
-      const parsed = JSON.parse(raw)
+      let parsed
+      try {
+        parsed = JSON.parse(raw)
+      } catch (parseError) {
+        // Try to extract JSON array from the response
+        const jsonMatch = raw.match(/\[[\s\S]*\]/)
+        if (jsonMatch) {
+          parsed = JSON.parse(jsonMatch[0])
+        } else {
+          throw new Error(`Failed to parse JSON: ${parseError.message}. Raw response: ${raw.slice(0, 200)}...`)
+        }
+      }
       if (!Array.isArray(parsed)) throw new Error('Unexpected response format from AI')
       setModules(prev => prev.map((m, i) => i === idx ? { ...m, quiz: parsed, quizSaved: false } : m))
     } catch (e) {
@@ -235,7 +267,17 @@ export default function ProgramModulesManager({
         level: programLevel,
         type: 'final_exam',
       })
-      const parsed = JSON.parse(raw)
+      let parsed
+      try {
+        parsed = JSON.parse(raw)
+      } catch (parseError) {
+        const jsonMatch = raw.match(/\[[\s\S]*\]/)
+        if (jsonMatch) {
+          parsed = JSON.parse(jsonMatch[0])
+        } else {
+          throw new Error(`Failed to parse JSON: ${parseError.message}. Raw response: ${raw.slice(0, 200)}...`)
+        }
+      }
       if (!Array.isArray(parsed)) throw new Error('Unexpected response format from AI')
       setExam({ exam: parsed, examSaved: false })
     } catch (e) {
