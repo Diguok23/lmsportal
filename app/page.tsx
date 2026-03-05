@@ -28,8 +28,8 @@ export default async function HomePage() {
           <Link href="/" className="flex items-center gap-3">
             <Image src="/logo.jpg" alt="IICAR logo" width={44} height={44} className="rounded-lg" priority />
             <div className="hidden sm:block">
-              <p className="text-xs font-bold uppercase tracking-widest text-accent">IICAR Global College</p>
-              <p className="text-[10px] text-primary-foreground/50 leading-tight">Institute of International Career Advancement</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-accent">IILPD Learning Portal</p>
+              <p className="text-[10px] text-primary-foreground/50 leading-tight">The International Institute for Leadership & Public Development</p>
             </div>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
@@ -95,17 +95,18 @@ Participants can access structured courses, learning resources, assessments, and
       <section className="py-20 bg-gradient-to-b from-background to-muted/30">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-14 text-center">
-            <h2 className="text-3xl font-bold text-primary">Why Choose IICAR?</h2>
-            <p className="mt-3 text-muted-foreground">Everything you need for a recognised professional qualification</p>
+            <h2 className="text-3xl font-bold text-primary">Training Standards & Quality Assurance
+</h2>
+            <p className="mt-3 text-muted-foreground">The IILPD Learning Portal supports professional education and certification programs delivered in accordance with institutional academic policies, industry best practices, and recognised professional development frameworks. All learning activities, assessments, and certification processes are structured to ensure quality, integrity, and consistency across all programs.</p>
           </div>
           <div className="grid gap-8 lg:grid-cols-2">
             {/* Feature Cards */}
             <div className="grid gap-8 md:grid-cols-2">
               {[
-                { icon: BookOpen, title: 'AI-Assisted Content', desc: 'Structured curriculum generated and refined with AI, reviewed by domain experts for accuracy.' },
-                { icon: Award, title: 'Verifiable Certificates', desc: 'Every certificate carries a unique ID instantly verifiable on our public portal.' },
-                { icon: Globe, title: 'Learn Anywhere', desc: 'Fully self-paced and accessible on any device from any country, 24/7.' },
-                { icon: Shield, title: 'Rigorous Standards', desc: 'Built on transparent academic standards with proctored assessments and structured grading.' },
+                { icon: BookOpen, title: 'Quality Assurance', desc: 'A quality-assured digital learning environment supported by audit-ready processes to maintain compliance and transparency..' },
+                { icon: Award, title: 'Assessment Integrity', desc: 'Secure management of learner assessments and certification records, protecting data and accurately tracking learner achievements.' },
+                { icon: Globe, title: 'Resource Governance', desc: 'Controlled access to approved academic and learning materials, ensuring learners use verified and reliable resources.' },
+                { icon: Shield, title: 'Framework Alignment', desc: 'Structured professional learning aligned with recognised training frameworks, ensuring consistency and credibility in programme delivery.' },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
@@ -129,7 +130,7 @@ Participants can access structured courses, learning resources, assessments, and
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-14 text-center">
             <h2 className="text-3xl font-bold text-primary">Professional Programs</h2>
-            <p className="mt-3 text-muted-foreground">Industry-aligned certifications built for working professionals</p>
+            <p className="mt-3 text-muted-foreground">Industry-aligned certifications built for working training and professionals</p>
           </div>
           {programs && programs.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -146,7 +147,7 @@ Participants can access structured courses, learning resources, assessments, and
                     <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{program.description}</p>
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
                       <span className="text-lg font-bold text-primary">
-                        {program.price_cents === 0 ? 'Free' : `KES ${(program.price_cents / 100).toLocaleString()}`}
+                        {program.price_cents === 0 ? 'Free' : `USD ${(program.price_cents / 100).toLocaleString()}`}
                       </span>
                       <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                         <Link href={`/auth/register?program=${program.id}`}>Enroll</Link>
@@ -177,9 +178,9 @@ Participants can access structured courses, learning resources, assessments, and
             <div className="grid gap-10 md:grid-cols-2">
               {[
                 { step: '01', title: 'Register & Enroll', desc: 'Create your account and enroll in your chosen certification program.' },
-                { step: '02', title: 'Learn at Your Pace', desc: 'Access AI-assisted lessons organised by module. Study on any device, anytime.' },
+                { step: '02', title: 'Learn at Your Pace', desc: 'Access full lessons organised by module. Study on any device, anytime.' },
                 { step: '03', title: 'Pass Assessments', desc: 'Complete module quizzes and a final exam to demonstrate your mastery.' },
-                { step: '04', title: 'Get Certified', desc: 'Receive a verifiable digital certificate with a unique IICAR ID upon completion.' },
+                { step: '04', title: 'Get Certified', desc: 'Receive a verifiable digital certificate with a unique IILPD ID upon completion.' },
               ].map(({ step, title, desc }) => (
                 <div key={step} className="flex flex-col items-start text-left gap-4 p-6 rounded-xl bg-background border border-border">
                   <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-accent bg-primary text-accent font-bold text-lg">
@@ -204,10 +205,10 @@ Participants can access structured courses, learning resources, assessments, and
           <h2 className="mb-14 text-center text-3xl font-bold">What Our Students Say</h2>
           <div className="grid gap-8 md:grid-cols-3">
             {[
-              { name: 'Amara N.', country: 'Nigeria', quote: 'IICAR gave me a credential that opened doors I never thought possible. The AI-powered content is genuinely excellent.' },
-              { name: 'Raj P.', country: 'India', quote: 'I completed my certification while working full time. The self-paced structure is exactly what busy professionals need.' },
-              { name: 'Sofia M.', country: 'Brazil', quote: 'The verification feature is fantastic — my employer confirmed my certificate within minutes. Highly professional.' },
-            ].map(({ name, country, quote }) => (
+              { name: 'Lina K.', country: 'Kenya', quote: 'The IILPD Learners Portal made it easy to study at my own pace. The structured courses and certification added real value to my career.' },
+{ name: 'Carlos R.', country: 'Mexico', quote: 'I appreciated how professional and well-organised the learning portal is. The course materials are clear and the certification process is smooth.' },
+{ name: 'Mei L.', country: 'Singapore', quote: 'The IILPD platform is intuitive and reliable. Being able to access high-quality training and verified certification in one place is excellent.' },
+].map(({ name, country, quote }) => (
               <div key={name} className="rounded-xl bg-white/10 backdrop-blur-sm p-6 flex flex-col gap-4 border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
