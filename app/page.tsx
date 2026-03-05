@@ -206,8 +206,8 @@ Participants can access structured courses, learning resources, assessments, and
           <div className="grid gap-8 md:grid-cols-3">
             {[
               { name: 'Lina K.', country: 'Kenya', quote: 'The IILPD Learners Portal made it easy to study at my own pace. The structured courses and certification added real value to my career.' },
-{ name: 'Carlos R.', country: 'Mexico', quote: 'I appreciated how professional and well-organised the learning portal is. The course materials are clear and the certification process is smooth.' },
-{ name: 'Mei L.', country: 'Singapore', quote: 'The IILPD platform is intuitive and reliable. Being able to access high-quality training and verified certification in one place is excellent.' },
+{ name: 'Carlos R.', country: 'Rwanda', quote: 'I appreciated how professional and well-organised the learning portal is. The course materials are clear and the certification process is smooth.' },
+{ name: 'Mei L.', country: 'USA', quote: 'The IILPD platform is intuitive and reliable. Being able to access high-quality training and verified certification in one place is excellent.' },
 ].map(({ name, country, quote }) => (
               <div key={name} className="rounded-xl bg-white/10 backdrop-blur-sm p-6 flex flex-col gap-4 border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex gap-1">
@@ -230,16 +230,16 @@ Participants can access structured courses, learning resources, assessments, and
       <section className="py-24 bg-gradient-to-br from-primary via-primary/95 to-primary text-primary-foreground">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <Badge className="mb-6 mx-auto bg-accent/20 text-accent border-accent/30 text-xs tracking-widest uppercase px-4 py-1 w-fit">
-            Limited Time Offer
+            Limited Time Offer. ENROLL NOW!
           </Badge>
           <h2 className="text-4xl font-bold leading-tight md:text-5xl">Ready to Advance Your Career?</h2>
-          <p className="mt-6 text-lg text-primary-foreground/80 leading-relaxed">Join thousands of professionals who have earned globally recognised IICAR certifications. Start your journey today with a free account.</p>
+          <p className="mt-6 text-lg text-primary-foreground/80 leading-relaxed">Join a growing community of learners advancing their knowledge through the IILPD Learners Portal. Create your free account and begin your professional learning journey today.</p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold px-10">
-              <Link href="/auth/register">Create Free Account</Link>
+              <Link href="/auth/register">Register</Link>
             </Button>
             <Button asChild size="lg" className="border border-white/50 bg-transparent text-primary-foreground hover:bg-white/10">
-              <Link href="/verify">Verify a Certificate</Link>
+              <Link href="/verify">Verify Certification</Link>
             </Button>
           </div>
         </div>
@@ -253,11 +253,11 @@ Participants can access structured courses, learning resources, assessments, and
               <div className="flex items-center gap-3 mb-4">
                 <Image src="/logo.jpg" alt="IICAR" width={40} height={40} className="rounded-md" />
                 <div>
-                  <p className="text-sm font-bold text-accent">IICAR</p>
-                  <p className="text-xs text-primary-foreground/50">Global College</p>
+                  <p className="text-sm font-bold text-accent">The IILPD Learning Portal</p>
+                  <p className="text-xs text-primary-foreground/50">The International Institute for Leadership & Public Development</p>
                 </div>
               </div>
-              <p className="text-xs text-primary-foreground/60 leading-relaxed">Professional certification platform powering careers globally.</p>
+              <p className="text-xs text-primary-foreground/60 leading-relaxed">Digital learning and certification platform supporting professionals worldwide.</p>
             </div>
             <div>
               <h4 className="text-sm font-semibold mb-3">Learn</h4>
@@ -285,9 +285,9 @@ Participants can access structured courses, learning resources, assessments, and
           </div>
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-primary-foreground/40">&copy; {new Date().getFullYear()} IICAR Global College. All rights reserved.</p>
+              <p className="text-xs text-primary-foreground/40">&copy; {new Date().getFullYear()} IILPD Learning Portal. All rights reserved.</p>
               <div className="flex gap-6 text-xs text-primary-foreground/60">
-                <span>Institute of International Career Advancement and Recognition</span>
+                <span>The International Institute for Leadership & Public Development</span>
               </div>
             </div>
           </div>
