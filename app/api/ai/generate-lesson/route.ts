@@ -1,11 +1,10 @@
+import OpenAI from 'openai'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { generateText } from 'ai'
-import { createOpenAI } from '@ai-sdk/openai'
 
-const xai = createOpenAI({
-  baseURL: 'https://api.x.ai/v1',
+const client = new OpenAI({
   apiKey: process.env.XAI_API_KEY,
+  baseURL: 'https://api.x.ai/v1',
 })
 
 export async function POST(request: Request) {
@@ -29,14 +28,16 @@ The lesson should include:
 Write in a clear, professional academic tone suitable for working professionals. Length: approximately 600-900 words. Use clear paragraphs — do not use markdown headers or bullet points.`
 
   try {
-    const { text } = await generateText({
-      model: xai('grok-beta'),
-      prompt,
-      maxTokens: 1200,
+    const completion = await client.chat.completions.create({
+      model: 'grok-beta',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 1200,
       temperature: 0.7,
     })
 
-    return NextResponse.json({ content: text || 'No content generated.' })
+    const text = completion.choices[0]?.message?.content || 'No content generated.'
+
+    return NextResponse.json({ content: text })
   } catch (err) {
     console.error('[generate-lesson] AI generation error:', err)
     return NextResponse.json({

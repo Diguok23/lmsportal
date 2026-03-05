@@ -1,10 +1,9 @@
-import { streamText } from 'ai'
-import { createOpenAI } from '@ai-sdk/openai'
+import OpenAI from 'openai'
 import { NextRequest } from 'next/server'
 
-const xai = createOpenAI({
-  baseURL: 'https://api.x.ai/v1',
+const client = new OpenAI({
   apiKey: process.env.XAI_API_KEY,
+  baseURL: 'https://api.x.ai/v1',
 })
 
 export async function POST(request: NextRequest) {
@@ -108,13 +107,38 @@ Return ONLY the JSON array. No other text.`
   }
 
   try {
-    const result = streamText({
-      model: xai('grok-beta'),
-      system: systemPrompt,
-      prompt: userPrompt,
-      maxOutputTokens: 6000,
+    const stream = await client.chat.completions.create({
+      model: 'grok-beta',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      max_tokens: 6000,
+      stream: true,
     })
-    return result.toTextStreamResponse()
+
+    const encoder = new TextEncoder()
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || ''
+            if (content) {
+              controller.enqueue(encoder.encode(content))
+            }
+          }
+          controller.close()
+        } catch (error) {
+          controller.error(error)
+        }
+      }
+    })
+
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
+    })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     return new Response(JSON.stringify({ error: msg }), {
