@@ -26,9 +26,9 @@ export function DashboardMobileNav({ profile, user }: Props) {
       {/* MOBILE HEADER */}
       <div className="md:hidden sticky top-0 z-40 border-b border-border bg-card px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Image src="/logo.jpg" alt="IICAR" width={32} height={32} className="rounded-lg" />
+          <Image src="/logo.jpg" alt="IILPD" width={32} height={32} className="rounded-lg" />
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest">IICAR</p>
+            <p className="text-xs font-bold uppercase tracking-widest">IILPD</p>
             <p className="text-[9px] text-muted-foreground">Student</p>
           </div>
         </div>

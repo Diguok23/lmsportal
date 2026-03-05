@@ -7,9 +7,9 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swa
 const lato = Lato({ subsets: ['latin'], weight: ['400', '700', '900'], variable: '--font-body', display: 'swap' })
 
 export const metadata: Metadata = {
-  title: 'IICAR Global College – Professional Certification',
+  title: 'IILPD Student Portal – Professional Certification',
   description:
-    'Institute of International Career Advancement and Recognition — self-paced professional certification programs recognised globally.',
+    'IILPD Student Portal — self-paced professional certification programs with AI-assisted learning. Learn at your pace, earn recognized credentials.',
   icons: { icon: '/logo.jpg', apple: '/logo.jpg' },
 }
 
